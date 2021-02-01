@@ -1,5 +1,6 @@
 package guru.springframework.domain;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +11,8 @@ import java.math.BigDecimal;
 /**
  * Created by jt on 6/13/17.
  */
-@Getter
-@Setter
 @EqualsAndHashCode(exclude = {"recipe"})
+@Data
 @Entity
 public class Ingredient {
 

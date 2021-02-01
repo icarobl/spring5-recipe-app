@@ -2,9 +2,13 @@ package guru.springframework.controllers;
 
 import guru.springframework.commands.IngredientCommand;
 import guru.springframework.commands.RecipeCommand;
+import guru.springframework.domain.Ingredient;
+import guru.springframework.domain.Recipe;
+import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.services.IngredientService;
 import guru.springframework.services.RecipeService;
 import guru.springframework.services.UnitOfMeasureService;
+import org.hibernate.validator.constraints.ModCheck;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.HashSet;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -31,6 +36,9 @@ public class IngredientControllerTest {
 
     @Mock
     RecipeService recipeService;
+
+    @Mock
+    RecipeRepository recipeRepository;
 
     IngredientController controller;
 
@@ -132,5 +140,35 @@ public class IngredientControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/2/ingredient/3/show"));
 
+    }
+
+    @Test
+    public void testDeleteById() throws Exception {
+        // given
+        Recipe recipe = new Recipe();
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(3L);
+        recipe.addIngredient(ingredient);
+        ingredient.setRecipe(recipe);
+        Optional<Recipe> recipeOptional = Optional.of(recipe);
+
+        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+
+        // when
+        ingredientService.deleteById(1L, 3L);
+
+        // then
+        //verify(recipeRepository, times(1)).findById(anyLong());
+        //verify(recipeRepository, times(1)).save(any(Recipe.class));
+    }
+
+    @Test
+    public void testDeleteIngredient() throws Exception {
+        // Then
+        mockMvc.perform(get("/recipe/2/ingredient/3/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/recipe/2/ingredients"));
+
+        verify(ingredientService, times(1)).deleteById(anyLong(), anyLong());
     }
 }
